@@ -17,7 +17,6 @@ __email__ = 'thehappydinoa@gmail.com'
 __status__ = 'Development'
 
 
-
 class Associates(Transform):
     input_type = TruePerson
 
@@ -34,9 +33,11 @@ class Associates(Transform):
             if r.status_code == 200:
                 page = r.content
                 soup = BeautifulSoup(page, "html.parser")
-                associates = soup.find_all(attrs={"data-link-to-more": "associate"})
+                associates = soup.find_all(
+                    attrs={"data-link-to-more": "associate"})
                 for associate in associates:
-                    response += Person(associate.get_text())
+                    response += TruePerson(associate.get_text(),
+                                           properties_url=config['TruePeopleSearch.local.base_url'] + associate['href'])
 
         return response
 

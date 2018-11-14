@@ -17,7 +17,6 @@ __email__ = 'thehappydinoa@gmail.com'
 __status__ = 'Development'
 
 
-
 class Relatives(Transform):
     input_type = TruePerson
 
@@ -37,7 +36,8 @@ class Relatives(Transform):
                 relatives = soup.find_all(
                     attrs={"data-link-to-more": "relative"})
                 for relative in relatives:
-                    response += Person(relative.get_text())
+                    response += TruePerson(relative.get_text(),
+                                           properties_url=config['TruePeopleSearch.local.base_url'] + relative['href'])
 
         return response
 

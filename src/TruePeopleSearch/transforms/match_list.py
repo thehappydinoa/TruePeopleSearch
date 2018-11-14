@@ -16,6 +16,7 @@ __maintainer__ = 'thehappydinoa'
 __email__ = 'thehappydinoa@gmail.com'
 __status__ = 'Development'
 
+# TODO: Concolidate all transforms into 1 for machine
 
 
 class MatchList(Transform):
@@ -48,8 +49,8 @@ class MatchList(Transform):
             soup = BeautifulSoup(page, "html.parser")
 
             addresses = soup.find_all(class_="card-summary")
-            for t in addresses:
-                content = t.find_all(class_="content-value")
+            for address in addresses:
+                content = address.find_all(class_="content-value")
                 try:
                     age = int(content[0].get_text())
                 except:
@@ -63,7 +64,7 @@ class MatchList(Transform):
                     city = None
                     state = None
                 response += TruePerson(name + " " + location, properties_url=base_url +
-                                       t['data-detail-link'], properties_city=city, properties_state=state, properties_age=age)
+                                       address['data-detail-link'], properties_city=city, properties_state=state, properties_age=age)
 
         return response
 
