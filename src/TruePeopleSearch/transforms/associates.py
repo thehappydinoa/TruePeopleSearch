@@ -1,7 +1,4 @@
-import requests
-from bs4 import BeautifulSoup
 from canari.framework import EnableDebugWindow
-from canari.maltego.entities import Person
 from canari.maltego.transform import Transform
 
 from .common.entities import TruePerson
@@ -18,26 +15,21 @@ __status__ = 'Development'
 
 
 class Associates(Transform):
+    """Gathers associates from TruePeopleSearch"""
     input_type = TruePerson
 
     def do_transform(self, request, response, config):
         person = request.entity
         fields = person.fields
 
-        user_agent = config['TruePeopleSearch.local.user_agent'].replace(
-            '"', "")
-        if fields.get("properties.url"):
-            r = requests.get(fields.get("properties.url").value,
-                             headers={"User-Agent": user_agent})
+        soup = scrape(fields.get("properties.url"))
 
-            if r.status_code == 200:
-                page = r.content
-                soup = BeautifulSoup(page, "html.parser")
-                associates = soup.find_all(
-                    attrs={"data-link-to-more": "associate"})
-                for associate in associates:
-                    response += TruePerson(associate.get_text(),
-                                           properties_url=config['TruePeopleSearch.local.base_url'] + associate['href'])
+        if soup:
+            associates = soup.find_all(
+                attrs={"data-link-to-more": "associate"})
+            for associate in associates:
+                response += TruePerson(associate.get_text(),
+                                       properties_url=config['TruePeopleSearch.local.base_url'] + associate['href'])
 
         return response
 

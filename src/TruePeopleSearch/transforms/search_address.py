@@ -1,5 +1,5 @@
 from canari.framework import EnableDebugWindow
-from canari.maltego.entities import Person
+from canari.maltego.entities import EmailAddress, Location, PhoneNumber
 from canari.maltego.transform import Transform
 
 from .common.entities import TruePerson
@@ -16,25 +16,32 @@ __email__ = 'thehappydinoa@gmail.com'
 __status__ = 'Development'
 
 
-class MatchList(Transform):
+@EnableDebugWindow
+class SearchAddress(Transform):
     """Gathers people from TruePeopleSearch"""
-    input_type = Person
+    input_type = Location
 
     def do_transform(self, request, response, config):
-        person = request.entity
-        fields = person.fields
-        name = person.fullname
-        citystatezip = []
-        for key in ["properties.city", "properties.state", "properties.zip"]:
-            value = fields.get(key)
-            if value and not str(value.value) == "0":
-                citystatezip.append(value.value.strip())
+        location = request.entity
+        fields = location.fields
 
-        if citystatezip:
-            citystatezip = ",%20".join(citystatezip)
-            path = "/results?name=%s&citystatezip=%s" % (name, citystatezip)
+        if fields.get("streetaddress"):
+            name = fields.get("streetaddress").value
         else:
-            path = "/results?name=" + name.replace(" ", "%20")
+            name = fields.get("location.name").value
+
+        if fields.get("location.areacode"):
+            citystatezip = fields.get("location.areacode").value.split("-")[0]
+        elif fields.get("city") and fields.get("location.area"):
+            citystatezip = fields.get("city").value + \
+                ", " + fields.get("location.area").value
+        else:
+            citystatezip = name.split(" ")[-1].split("-")[0]
+
+        name = name.replace(" ", "%20").replace("\n", "%20")
+
+        path = "/results?streetaddress=%s&citystatezip=%s" % (
+            name, citystatezip)
 
         base_url = config['TruePeopleSearch.local.base_url']
 

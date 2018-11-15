@@ -1,5 +1,3 @@
-import requests
-from bs4 import BeautifulSoup
 from canari.framework import EnableDebugWindow
 from canari.maltego.entities import Person
 from canari.maltego.transform import Transform
@@ -18,26 +16,20 @@ __status__ = 'Development'
 
 
 class Relatives(Transform):
+    """Gathers relatives from TruePeopleSearch"""
     input_type = TruePerson
 
     def do_transform(self, request, response, config):
         person = request.entity
         fields = person.fields
 
-        user_agent = config['TruePeopleSearch.local.user_agent'].replace(
-            '"', "")
-        if fields.get("properties.url"):
-            r = requests.get(fields.get("properties.url").value,
-                             headers={"User-Agent": user_agent})
+        soup = scrape(fields.get("properties.url"))
 
-            if r.status_code == 200:
-                page = r.content
-                soup = BeautifulSoup(page, "html.parser")
-                relatives = soup.find_all(
-                    attrs={"data-link-to-more": "relative"})
-                for relative in relatives:
-                    response += TruePerson(relative.get_text(),
-                                           properties_url=config['TruePeopleSearch.local.base_url'] + relative['href'])
+        if soup:
+            relatives = soup.find_all(attrs={"data-link-to-more": "relative"})
+            for relative in relatives:
+                response += TruePerson(relative.get_text(),
+                                       properties_url=config['TruePeopleSearch.local.base_url'] + relative['href'])
 
         return response
 
