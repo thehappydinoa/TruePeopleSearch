@@ -3,6 +3,7 @@ from canari.maltego.entities import EmailAddress
 from canari.maltego.transform import Transform
 
 from .common.entities import TruePerson
+from .common.scrapper import scrape
 
 __author__ = 'thehappydinoa'
 __copyright__ = 'Copyright 2018, TruePeopleSearch Project'
@@ -23,7 +24,13 @@ class EmailAddresses(Transform):
         person = request.entity
         fields = person.fields
 
-        soup = scrape(fields.get("properties.url"))
+        if fields.get("properties.url"):
+            url = fields.get("properties.url").value
+        else:
+            url = None
+
+        soup = scrape(url)
+
         if soup:
             email_addresses = soup.find_all(attrs={"class": "__cf_email__"})
             for email_address in email_addresses:

@@ -2,6 +2,7 @@ from canari.framework import EnableDebugWindow
 from canari.maltego.transform import Transform
 
 from .common.entities import TruePerson
+from .common.scrapper import scrape
 
 __author__ = 'thehappydinoa'
 __copyright__ = 'Copyright 2018, TruePeopleSearch Project'
@@ -22,7 +23,12 @@ class Associates(Transform):
         person = request.entity
         fields = person.fields
 
-        soup = scrape(fields.get("properties.url"))
+        if fields.get("properties.url"):
+            url = fields.get("properties.url").value
+        else:
+            url = None
+
+        soup = scrape(url)
 
         if soup:
             associates = soup.find_all(

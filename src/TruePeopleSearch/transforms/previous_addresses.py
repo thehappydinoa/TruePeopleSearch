@@ -3,6 +3,7 @@ from canari.maltego.entities import Location
 from canari.maltego.transform import Transform
 
 from .common.entities import TruePerson
+from .common.scrapper import scrape
 
 __author__ = 'thehappydinoa'
 __copyright__ = 'Copyright 2018, TruePeopleSearch Project'
@@ -23,7 +24,12 @@ class PreviousAddresses(Transform):
         person = request.entity
         fields = person.fields
 
-        soup = scrape(fields.get("properties.url"))
+        if fields.get("properties.url"):
+            url = fields.get("properties.url").value
+        else:
+            url = None
+
+        soup = scrape(url)
 
         if soup:
             addresses = soup.find_all(

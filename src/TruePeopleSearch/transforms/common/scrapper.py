@@ -49,7 +49,6 @@ def random_user_agent():
     return random.choice(user_agent_list)
 
 
-
 def scrape(url):
     if not url:
         return

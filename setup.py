@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 setup(
     name='TruePeopleSearch',
     author='thehappydinoa',
-    version='1.0.1',
+    version='1.0.2',
     author_email='thehappydinoa@gmail.com',
     description='Uses True People Search to gather info',
     license='GPLv3',

@@ -27,5 +27,3 @@
         :keyword str properties_name: Name (``properties.name``)
         :keyword str properties_city: City (``properties.city``)
         :keyword int properties_age: Age (``properties.age``)
-    
-

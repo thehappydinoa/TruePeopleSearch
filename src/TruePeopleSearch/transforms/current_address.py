@@ -24,7 +24,12 @@ class CurrentAddress(Transform):
         person = request.entity
         fields = person.fields
 
-        soup = scrape(fields.get("properties.url"))
+        if fields.get("properties.url"):
+            url = fields.get("properties.url").value
+        else:
+            url = None
+
+        soup = scrape(url)
 
         if soup:
             addresses = soup.find_all(
