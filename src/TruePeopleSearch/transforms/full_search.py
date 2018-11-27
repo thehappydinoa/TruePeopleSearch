@@ -10,7 +10,7 @@ __copyright__ = 'Copyright 2018, TruePeopleSearch Project'
 __credits__ = []
 
 __license__ = 'GPLv3'
-__version__ = '0.1'
+__version__ = '0.2'
 __maintainer__ = 'thehappydinoa'
 __email__ = 'thehappydinoa@gmail.com'
 __status__ = 'Development'
@@ -32,16 +32,6 @@ class FullSearch(Transform):
         soup = scrape(url)
 
         if soup:
-            associates = soup.find_all(
-                attrs={"data-link-to-more": "associate"})
-            for associate in associates:
-                response += TruePerson(associate.get_text(),
-                                       properties_url=config['TruePeopleSearch.local.base_url'] + associate['href'])
-
-            addresses = soup.find_all(attrs={"data-link-to-more": "address"})
-            for address in addresses:
-                response += Location(address.get_text())
-
             email_addresses = soup.find_all(attrs={"class": "__cf_email__"})
             for email_address in email_addresses:
                 fp = email_address['data-cfemail']
@@ -54,10 +44,22 @@ class FullSearch(Transform):
             for phone_number in phone_numbers:
                 response += PhoneNumber(phone_number.get_text())
 
+            addresses = soup.find_all(attrs={"data-link-to-more": "address"})
+            for unformated_address in addresses:
+                address = unformated_address.get_text().split(" ")
+                address[-1] = address[-1].split("-")[0]
+                response += Location(" ".join(address))
+
             relatives = soup.find_all(attrs={"data-link-to-more": "relative"})
             for relative in relatives:
                 response += TruePerson(relative.get_text(),
                                        properties_url=config['TruePeopleSearch.local.base_url'] + relative['href'])
+
+            associates = soup.find_all(
+                attrs={"data-link-to-more": "associate"})
+            for associate in associates:
+                response += TruePerson(associate.get_text(),
+                                       properties_url=config['TruePeopleSearch.local.base_url'] + associate['href'])
 
         return response
 

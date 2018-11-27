@@ -10,13 +10,13 @@ __copyright__ = 'Copyright 2018, TruePeopleSearch Project'
 __credits__ = []
 
 __license__ = 'GPLv3'
-__version__ = '0.1'
+__version__ = '0.2'
 __maintainer__ = 'thehappydinoa'
 __email__ = 'thehappydinoa@gmail.com'
 __status__ = 'Development'
 
 
-class MatchList(Transform):
+class Match(Transform):
     """Gathers people from TruePeopleSearch"""
     input_type = Person
 

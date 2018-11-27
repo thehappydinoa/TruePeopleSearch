@@ -10,7 +10,7 @@ __copyright__ = 'Copyright 2018, TruePeopleSearch Project'
 __credits__ = []
 
 __license__ = 'GPLv3'
-__version__ = '0.1'
+__version__ = '0.2'
 __maintainer__ = 'thehappydinoa'
 __email__ = 'thehappydinoa@gmail.com'
 __status__ = 'Development'
@@ -35,7 +35,9 @@ class CurrentAddress(Transform):
             addresses = soup.find_all(
                 attrs={"data-link-to-more": "address"})
             if addresses:
-                response += Location(addresses[0].get_text())
+                address = addresses[0].get_text().split(" ")
+                address[-1] = address[-1].split("-")[0]
+                response += Location(" ".join(address))
 
         return response
 

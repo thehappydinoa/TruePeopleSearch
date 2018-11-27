@@ -1,3 +1,4 @@
 canari>=3.3.9,<4
 beautifulsoup4>=4.6.3
 requests>=2.19.1
+fake-useragent>=0.1.11
